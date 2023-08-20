@@ -8,10 +8,10 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addCompanyFormData } from '../../redux/companySlice/companySLice';
 import { generateUniqueId } from '../../utils/generateUniqueId';
+import { useForm } from '../../customHooks/useForm';
 
 const CompanyForm = () => {
 	const initialState = {
@@ -21,21 +21,11 @@ const CompanyForm = () => {
 		revenue: '',
 		phone: '',
 	};
-	const [companyFormData, setCompanyFormData] = useState(initialState);
 	const dispatch = useDispatch();
-	const handleFormSubmit = (e) => {
-		e.preventDefault();
-		dispatch(addCompanyFormData(companyFormData));
-		setCompanyFormData(initialState);
-	};
-
-	const handleFormChange = (e) => {
-		const { name, value } = e.target;
-		setCompanyFormData((prevData) => ({
-			...prevData,
-			[name]: value,
-		}));
-	};
+	const { formData, handleFormChange, handleFormSubmit } = useForm(
+		initialState,
+		(data) => dispatch(addCompanyFormData(data))
+	);
 
 	return (
 		<Box borderWidth="1px" borderRadius="md" borderColor="gray.300">
@@ -56,7 +46,7 @@ const CompanyForm = () => {
 								type="text"
 								placeholder="Name"
 								name="name"
-								value={companyFormData.name}
+								value={formData.name}
 								onChange={handleFormChange}
 							/>
 						</Box>
@@ -68,7 +58,7 @@ const CompanyForm = () => {
 								type="text"
 								placeholder="Address"
 								name="address"
-								value={companyFormData.address}
+								value={formData.address}
 								onChange={handleFormChange}
 							/>
 						</Box>
@@ -80,7 +70,7 @@ const CompanyForm = () => {
 								type="number"
 								placeholder="Revenue"
 								name="revenue"
-								value={companyFormData.revenue}
+								value={formData.revenue}
 								onChange={handleFormChange}
 							/>
 						</Box>
@@ -92,7 +82,7 @@ const CompanyForm = () => {
 								type="number"
 								placeholder="Phone"
 								name="phone"
-								value={companyFormData.phone}
+								value={formData.phone}
 								onChange={handleFormChange}
 							/>
 						</Box>

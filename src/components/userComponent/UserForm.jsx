@@ -9,11 +9,12 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCompanyData } from '../../redux/companySlice/companySLice';
 import { addUserFormData } from '../../redux/userSlice/userSlice';
 import { generateUniqueId } from '../../utils/generateUniqueId';
+import { useForm } from '../../customHooks/useForm';
 
 const UserForm = () => {
 	const initialState = {
@@ -22,21 +23,12 @@ const UserForm = () => {
 		address: '',
 		company: '',
 	};
-	const [userFormData, setUserFormData] = useState(initialState);
 	const dispatch = useDispatch();
 	const companyDetails = useSelector(getCompanyData);
-	const handleFormSubmit = (e) => {
-		e.preventDefault();
-		dispatch(addUserFormData(userFormData));
-		setUserFormData(initialState);
-	};
-	const handleFormChange = (e) => {
-		const { name, value } = e.target;
-		setUserFormData((prevData) => ({
-			...prevData,
-			[name]: value,
-		}));
-	};
+	const { formData, handleFormChange, handleFormSubmit } = useForm(
+		initialState,
+		(data) => dispatch(addUserFormData(data))
+	);
 
 	const uniqueCompanyNames = useMemo(
 		() => Array.from(new Set(companyDetails.map((item) => item.name))),
@@ -62,7 +54,7 @@ const UserForm = () => {
 								type="text"
 								placeholder="Name"
 								name="name"
-								value={userFormData.name}
+								value={formData.name}
 								onChange={handleFormChange}
 							/>
 						</Box>
@@ -74,7 +66,7 @@ const UserForm = () => {
 								type="text"
 								placeholder="Address"
 								name="address"
-								value={userFormData.address}
+								value={formData.address}
 								onChange={handleFormChange}
 							/>
 						</Box>
@@ -84,7 +76,7 @@ const UserForm = () => {
 								placeholder="Select company"
 								borderColor="gray.400"
 								name="company"
-								value={userFormData.company}
+								value={formData.company}
 								onChange={handleFormChange}
 							>
 								{uniqueCompanyNames.map((item) => (
